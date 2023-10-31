@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
+.App {
+  background-image: url(./library2.jpg);
+  height: 100lvh;
+  width: 100%;
+  /* color: beige; */
+  overflow-y: auto;
+  overflow-x: auto;
+  justify-content: center;
+}
+
+div.homepage {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  
+}
+
+.routes {
+  color:rgb(255, 230, 230);
+}
+
+form {
+  margin: auto;
+  width: 400px;
+  height: 500px;
+  align-self: center;
+  padding: 50px 35px;
+  background-color: rgba(235, 194, 194, 0.2);
+  border: 0.2px solid rgba(252, 248, 248, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 5 5 40px rgba(16, 8, 8, 0.133);
+  color: white;
+}
+
+div.grid-container{
+  /* margin: auto;
+  align-self: center;
+  padding: 50px 35px;
+  width: 600px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+div.book-grid {
+  margin: auto;
+  align-self: center;
+  padding: 50px 35px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  background-color: rgba(26, 15, 11, 0.7);
+  grid-template-rows: auto;
+  gap: 30px;
+  border-radius: 20px;
+  width: 150%;
+  flex-direction: row;
+}
+
+div.card {
+  display: grid;
+  grid-template-rows: 250px 1fr;
+  background-color: rgb(35, 13, 5);
+  color: white;
+  font-size: 15px;
+  align-self: center;
+  width: 130px;
+}
+
+div.card img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+  border-radius: 10px;
+}
+
+form.set-time-slot {
+  height: 250px;
+}
+
+div.form {
+  padding-top: 40px;
+}
+
+div.search-elements {
+  display:block;
+  padding: 20px 0;
+}
+
+form.change-pw {
+  height: 300px;
+}
+
+form.book-search {
+  height: 250px;
+  width: 600px;
+  margin-top: 30px;
+}
+
+form *{
+  font-family: 'Poppins', sans-serif;
+}
+form a {
+  color: white;
+  text-decoration: none;
+}
+
+form a:hover {
+  text-decoration: underline;
+}
+
+label {
+  display: block;
+  margin-top: 30px;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+input {
+  background-color: rgba(235, 194, 194, 0.15);
+  border-radius: 5px;
+  font-size: 12px;
+  height: 50px;
+  border-color: rgba(235, 194, 194, 0.15);
+  width: 100%;
+  padding: 0 10px;
+  color: white;
+}
+
+button.login-reg,button.search-button, button.time-button {
+  width: 100%;
+  color: rgb(0, 0, 0);
+  background-color: rgb(250, 237, 237);
+  border-radius: 5px;
+  border: 2px solid rgb(250,237,237);
+  margin-top: 25px;
+  padding: 10px 0;
+}
+
+button.search-button, button.time-button {
+  width: 80%;
+  display: inline-block;
+  margin-left: 10%;
+}
+
+input.radio {
+  height: 16px;
+  width: 20% !important;
+}
+.routes .radio-label {
+  display: inline-block;
+}
+::placeholder {
+  color:rgb(212, 200, 200);
+  font-size: 15px;
+}
+
+.routes form h2 ,h4{
+  text-align: center;
+  font-weight: 500;
+  font-size: 30px;
+}
+
+.routes .formdiv {
+  size : 50px;
+}
+
+nav {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  /* background-color: rgb(178, 150, 234); */
+  background-color: #0004;
+  text-align: center;
+  align-items: center;
+  margin: auto;
+  width: 50;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+nav ul li {
+  list-style-type: none;
+  display: inline-block;
+}
+nav #navitem {
+  color:rgb(255, 230, 230);
+  text-decoration: none;
+  padding-left: 30px;
+  padding-right: 30px;
+  font-size: 20px;
+}
+
+nav #navitem:hover {
+  border-radius: 5px;
+  border: 2px solid rgb(255, 230, 230);
+  animation: ease-in-out;
+}

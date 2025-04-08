@@ -4,7 +4,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-
+// some change
 @Entity
 @Table(name = "books")
 public class Book {
@@ -20,6 +20,7 @@ public class Book {
     private String isbn;
 
     private LocalDate publishedDate;
+    private String version;
 
     // Constructors
     public Book() {}
@@ -62,6 +63,14 @@ public class Book {
 
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getVersion() {
+        return this.version;
     }
 
     public LocalDate getPublishedDate() {

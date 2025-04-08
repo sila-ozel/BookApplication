@@ -16,6 +16,8 @@ public class Library {
 
     private String location;
 
+    private int quota;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "library_id") // This adds a foreign key in the Book table
     private List<Book> books = new ArrayList<>();

@@ -20,7 +20,10 @@ public class Book {
     private String isbn;
 
     private LocalDate publishedDate;
+
     private String version;
+
+    private Double price;
 
     // Constructors
     public Book() {}
@@ -72,6 +75,8 @@ public class Book {
     public String getVersion() {
         return this.version;
     }
+
+    
 
     public LocalDate getPublishedDate() {
         return publishedDate;

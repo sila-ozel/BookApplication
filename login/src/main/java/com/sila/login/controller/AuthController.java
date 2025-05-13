@@ -81,10 +81,10 @@ public class AuthController {
         String pw = e.encode(password.getPw());
         u.setPassword(pw); // new password
         u.setChange_date(LocalDateTime.now());
-        LastPasswords lp = new LastPasswords(u, (u.getNo_of_pw() % 3) + 1, u.getPassword());
+        LastPasswords lp = new LastPasswords(u, (u.getNo_of_pw() % 5) + 1, u.getPassword());
         u.setNo_of_pw(u.getNo_of_pw() + 1);
         us.updateUser(u);
-        if (u.getNo_of_pw() <= 3) {
+        if (u.getNo_of_pw() <= 5) {
             us.insertPw(lp);
         } else {
             us.updatePw(lp);

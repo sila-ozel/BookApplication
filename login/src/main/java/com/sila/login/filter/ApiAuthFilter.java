@@ -13,37 +13,51 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sila.login.utility.JwtUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
-public class ApiAuthFilter extends OncePerRequestFilter{
+public class ApiAuthFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApiAuthFilter.class);
 
     @Autowired
     private JwtUtility jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        //this filter should only be applied on the /posttime endpoint
-        if(request.getMethod().equalsIgnoreCase("POST") && (request.getRequestURI().equals("/posttime"))) {
-            String token = getToken(request);
-            if(token != null && jwtUtil.validateToken(token)) {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        if (isSecuredEndpoint(request)) {
+            String token = extractToken(request);
+
+            if (token != null && jwtUtil.validateToken(token)) {
                 filterChain.doFilter(request, response);
                 return;
-            }
-            else { //invalid credentials
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            } else {
+                logger.warn("Unauthorized access attempt to secured endpoint: {}", request.getRequestURI());
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or missing token");
                 return;
             }
         }
+
         filterChain.doFilter(request, response);
     }
 
-    private String getToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if(StringUtils.hasText(token) && token.startsWith("Bearer")) {
-            return token.split(" ")[1].trim();
+    private boolean isSecuredEndpoint(HttpServletRequest request) {
+        return "POST".equalsIgnoreCase(request.getMethod())
+                && "/posttime".equalsIgnoreCase(request.getRequestURI());
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+            String[] parts = header.split(" ");
+            if (parts.length == 2) {
+                return parts[1].trim();
+            }
         }
         return null;
     }
-    
 }

@@ -4,75 +4,97 @@ import { useNavigate } from "react-router-dom";
 
 export default function RegPage({ setAuthority, setLoggedin }) {
     const base_url = `http://localhost:8080`;
-    const [name, setName] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("");
-    const navigate = useNavigate();
-    const [error, setError] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const validatePassword = (pw) => {
+        if (pw.length < 8) {
+            return "Password must be at least 8 characters long.";
+        }
+        if (!/\d/.test(pw)) {
+            return "Password must contain at least one digit.";
+        }
+        if (!/[A-Z]/.test(pw)) {
+            return "Password must contain at least one capital letter.";
+        }
+        return null;
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const containsDigit = /\d/.test(password);
-        const containsCaps = /[A-Z]/.test(password);
-        if (!containsDigit) {
-            setErrorMsg("Password must contain at least one digit.");
+        const validationError = validatePassword(password);
+        if (validationError) {
+            setErrorMsg(validationError);
             return;
         }
-        if (!containsCaps) {
-            setErrorMsg("Password must contain at least one capital letter.");
-            return;
+
+        const userData = { username, password, role };
+
+        try {
+            const response = await axios.post(`${base_url}/register`, userData, { withCredentials: true });
+            setLoggedin(true);
+            setAuthority(role);
+            navigate(role === 'ROLE_ADMIN' ? '/adminpage' : '/userpage');
+        } catch (err) {
+            setErrorMsg(err?.response?.status === 409
+                ? "User already exists. Try a different username."
+                : "Registration failed. Please try again.");
         }
-        const u = {
-            username: name,
-            password: password,
-            role: role
-        }
-        console.log(name)
-        axios.post(`${base_url}/register`, { ...u }, { withCredentials: true })
-            .then((response) => {
-                setLoggedin(true);
-                navigate(role === 'ROLE_ADMIN' ? '/adminpage' : '/userpage');
-            })
-            .catch((error) => { setError(error); })
-        setAuthority(role);
-    }
-
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-    }
-
-    const handlePwChange = (event) => {
-        setPassword(event.target.value);
-    }
-
-    const handleRoleChange = (event) => {
-        setRole(event.target.value);
-    }
+    };
 
     return (
         <div className="form">
-            {errorMsg && <p>{errorMsg}</p>}
             <form onSubmit={handleSubmit}>
                 <h2>Register</h2>
+
+                {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+
                 <div>
-                    <div>
-                        <label>Username</label>
-                        <input type="text" value={name} placeholder="username" required onChange={handleNameChange}></input>
-                    </div>
-                    <div>
-                        <label>Password</label>
-                        <input type="password" value={password} min={8} placeholder="password" required onChange={handlePwChange}></input>
-                    </div>
-                    <div className="radios">
-                        <label className="radio-label">User</label>
-                        <input className="radio" name="radio" type="radio" required value={"ROLE_USER"} onChange={handleRoleChange}></input>
-                        <label className="radio-label">Admin</label>
-                        <input className="radio" name="radio" type="radio" required value={"ROLE_ADMIN"} onChange={handleRoleChange}></input>
-                    </div>
-                    <button className="login-reg" type="submit">Register</button>
-                    <p>Already have an account? <a href="/userlogin">Login</a></p>
+                    <label>Username</label>
+                    <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Enter username"
+                        required
+                    />
                 </div>
+
+                <div>
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter password"
+                        required
+                    />
+                </div>
+
+                <div className="radios">
+                    <label className="radio-label">User</label>
+                    <input
+                        type="radio"
+                        name="role"
+                        value="ROLE_USER"
+                        onChange={(e) => setRole(e.target.value)}
+                        required
+                    />
+                    <label className="radio-label">Admin</label>
+                    <input
+                        type="radio"
+                        name="role"
+                        value="ROLE_ADMIN"
+                        onChange={(e) => setRole(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <button className="login-reg" type="submit">Register</button>
+                <p>Already have an account? <a href="/userlogin">Login</a></p>
             </form>
         </div>
     );

@@ -5,14 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,23 +14,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "users")
-@SecondaryTable(name = "last_change_date", pkJoinColumns = @PrimaryKeyJoinColumn(name="username"))
-public class User implements UserDetails{
+@SecondaryTable(
+    name = "last_change_date",
+    pkJoinColumns = @PrimaryKeyJoinColumn(name = "username")
+)
+public class User implements UserDetails {
+
     @Id
-    @Column(name = "username")
+    @Column(name = "username", nullable = false, unique = true)
     @NonNull
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     @NonNull
     private String password;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     @NonNull
     private String role;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<LastPasswords> lastPasswords;
 
     @Column(name = "no_of_pw")
     private int no_of_pw;
@@ -45,17 +39,45 @@ public class User implements UserDetails{
     @Column(name = "change_date", table = "last_change_date")
     private LocalDateTime change_date;
 
-    public User() {
-    }
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<LastPasswords> lastPasswords;
 
-    public User(String username, String password, String role) {
+    // Constructors
+    public User() {}
+
+    public User(@NonNull String username, @NonNull String password, @NonNull String role) {
         this.username = username;
         this.password = password;
         this.role = role;
     }
 
+    // Getters and Setters
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(@NonNull String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NonNull String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(@NonNull String role) {
+        this.role = role;
+    }
+
     public int getNo_of_pw() {
-        return this.no_of_pw;
+        return no_of_pw;
     }
 
     public void setNo_of_pw(int no_of_pw) {
@@ -66,44 +88,22 @@ public class User implements UserDetails{
         return change_date;
     }
 
-    public void setChange_date(LocalDateTime datetime) {
-        this.change_date = datetime;
+    public void setChange_date(LocalDateTime change_date) {
+        this.change_date = change_date;
     }
 
-    public String getUsername() {
-        return this.username;
+    public List<LastPasswords> getLastPasswords() {
+        return lastPasswords;
     }
 
-    public String getPassword() {
-        return this.password;
+    public void setLastPasswords(List<LastPasswords> lastPasswords) {
+        this.lastPasswords = lastPasswords;
     }
 
-    public String getRole() {
-        return this.role;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    @Override
-    public String toString() {
-        String str = String.format("Name: %s, Password: %s, Role: %s", username, password, role);
-        return str;
-    }
-
+    // Spring Security methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority auth = new SimpleGrantedAuthority(role);
-        return Collections.singletonList(auth);
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
     @Override
@@ -124,5 +124,11 @@ public class User implements UserDetails{
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    // Avoid logging the password
+    @Override
+    public String toString() {
+        return String.format("Username: %s, Role: %s", username, role);
     }
 }

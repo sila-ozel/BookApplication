@@ -1,7 +1,7 @@
 package com.sila.login.model;
-
+// adding a comment
 public class ApiAuth {
-    private String username, password;
+    private String username, password, age;
 
     public ApiAuth() {}
 
@@ -24,5 +24,8 @@ public class ApiAuth {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    public int getAge() {
+        return this.age;
     }
 }

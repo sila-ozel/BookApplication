@@ -25,6 +25,9 @@ public class Book {
 
     private Double price;
 
+    private String editor;
+
+
     // Constructors
     public Book() {}
 
@@ -76,7 +79,9 @@ public class Book {
         return this.version;
     }
 
-    
+    public String getEditor() {
+        return this.editor;
+    }
 
     public LocalDate getPublishedDate() {
         return publishedDate;

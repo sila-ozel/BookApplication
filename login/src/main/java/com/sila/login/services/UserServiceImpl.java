@@ -18,98 +18,98 @@ import com.sila.login.repository.SingleValRepo;
 import com.sila.login.repository.UserRepository;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService{
+public class UserServiceImpl implements UserService, UserDetailsService {
+
+    private static final int MAX_PASSWORD_HISTORY = 5;
 
     @Autowired
-    UserRepository ur;
+    private UserRepository userRepository;
 
     @Autowired
-    LastPasswordsRepository lpr;
+    private LastPasswordsRepository passwordRepository;
 
     @Autowired
-    SingleValRepo svr;
+    private SingleValRepo singleValRepo;
 
     @Override
     public User saveUser(User user) {
-        assert user!=null;
-        List<User> users = getAllUsers();
-        //if a user with same primary key already exists this method should not save
-        for(User u: users) {
-            if(u.equals(user))
-                return u;
+        if (user == null) throw new IllegalArgumentException("User cannot be null");
+
+        Optional<User> existingUser = userRepository.findById(user.getUsername());
+        if (existingUser.isPresent()) {
+            return existingUser.get(); // Don't save duplicate
         }
+
         user.setChange_date(LocalDateTime.now());
         user.setNo_of_pw(1);
-        User u = ur.save(user);
-        LastPasswords l = new LastPasswords(user, user.getNo_of_pw() % 4, user.getPassword());
-        lpr.save(l);
-        return u;
+        User savedUser = userRepository.save(user);
+
+        LastPasswords initialPassword = new LastPasswords(user, 1, user.getPassword());
+        passwordRepository.save(initialPassword);
+
+        return savedUser;
     }
 
     @Override
     public User getUserByName(String username) {
-        if(ur.findById(username).isPresent()) {
-            return ur.findById(username).get();
-        }
-        return null;
+        return userRepository.findById(username).orElse(null);
     }
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = (List<User>) ur.findAll();
-        return users;
+        return (List<User>) userRepository.findAll();
     }
 
     @Override
     public void deleteUserByName(String username) {
-        ur.deleteById(username);
+        userRepository.deleteById(username);
     }
 
     @Override
     public void deleteUser(User user) {
-        ur.delete(user);
+        userRepository.delete(user);
     }
 
     @Override
     public List<LastPasswords> findAllPwsByUsername(String username) {
-        return lpr.findPwsByUsername(username);
+        return passwordRepository.findPwsByUsername(username);
     }
 
     @Override
-    public LastPasswords findPwByUsernameAndNo(String username, int pw_no) {
-        return lpr.findPwByNameAndNo(username, pw_no);
+    public LastPasswords findPwByUsernameAndNo(String username, int pwNo) {
+        return passwordRepository.findPwByNameAndNo(username, pwNo);
     }
 
     @Override
     public LastPasswords insertPw(LastPasswords password) {
-        return lpr.save(password);
+        return passwordRepository.save(password);
     }
 
     @Override
     public void updatePw(LastPasswords lp) {
-        lpr.updatePw(lp.getUser().getUsername(), lp.getPw_no(), lp.getPw());
+        passwordRepository.updatePw(lp.getUser().getUsername(), lp.getPw_no(), lp.getPw());
     }
 
     @Override
     public User updateUser(User user) {
-        return ur.save(user);
+        return userRepository.save(user);
     }
 
     @Override
     public SingleValues updateTimeSlot(SingleValues timeSlot) {
-        return svr.save(timeSlot);
+        return singleValRepo.save(timeSlot);
     }
 
     @Override
     public int getTimeSlot(String valueName) {
-        return svr.findById(valueName).get().getValue();
+        return singleValRepo.findById(valueName)
+            .map(SingleValues::getValue)
+            .orElseThrow(() -> new IllegalStateException("Time slot value not found: " + valueName));
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> u = ur.findById(username);
-        if(u.isPresent())
-            return u.get();
-        return null;
+        return userRepository.findById(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }

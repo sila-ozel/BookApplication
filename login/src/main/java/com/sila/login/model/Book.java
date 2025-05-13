@@ -4,7 +4,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-// some change
+// an entity that represents a book
 @Entity
 @Table(name = "books")
 public class Book {
